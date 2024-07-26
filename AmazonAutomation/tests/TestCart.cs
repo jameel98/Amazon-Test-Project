@@ -33,6 +33,7 @@ namespace AmazonProject.Tests
         {
             // Arrange
             _amazonHomePage.GoToHomePage();
+            _amazonHomePage.SearchForItem("laptop");
 
            
         }

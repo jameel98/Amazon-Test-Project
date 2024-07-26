@@ -1,22 +1,20 @@
+using AmazonProject.Infra;
 using OpenQA.Selenium;
 
 namespace AmazonProject.Pages
 {
-    public class AmazonHomePage
+    public class AmazonHomePage : BasePage  
     {
-        private IWebDriver _driver;
 
-        public AmazonHomePage(IWebDriver driver)
-        {
-            _driver = driver;
-        }
+        public AmazonHomePage(IWebDriver driver) : base(driver) { }
+
 
         private IWebElement SearchBox => _driver.FindElement(By.Id("twotabsearchtextbox"));
         private IWebElement SearchButton => _driver.FindElement(By.Id("nav-search-submit-button"));
 
         public void GoToHomePage()
         {
-            _driver.Navigate().GoToUrl("https://www.amazon.com");
+            NavigateTo("https://www.amazon.com");
         }
 
         public void SearchForItem(string item)

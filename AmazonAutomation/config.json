@@ -1,0 +1,10 @@
+{
+    "baseUrl": "https://www.amazon.com",
+    "searchTerm": "laptop",
+    "maxPrice": 500,
+    "minMemory": "16 GB",
+    "minRating": 4,
+    "maxReviewCount": 10,
+    "screenshotPath": "C://Users//Admin//Downloads//5 Tech//amazon project//AmazonAutomation//assets//Image.png"
+  }
+  
