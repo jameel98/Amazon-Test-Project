@@ -1,22 +1,40 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
+using SeleniumUndetectedChromeDriver;
+using System.Threading.Tasks;
 
 namespace AmazonProject.Infra
 {
     public class WebDriverManager
     {
+
         public IWebDriver Driver { get; private set; }
 
-        public void InitializeDriver()
+        // public void InitializeDriver()
+        // {
+        //     Driver = new ChromeDriver();
+        //     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+        // }
+
+
+       public async Task InitializeDriverAsync()
         {
-            Driver = new ChromeDriver();
-            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            var driverPath = await new ChromeDriverInstaller().Auto();
+            Driver = UndetectedChromeDriver.Create(driverExecutablePath: driverPath);
+
+            ((IJavaScriptExecutor)Driver).ExecuteScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
+
+            Driver.Manage().Window.Maximize();
         }
 
         public void CloseDriver()
         {
-            Driver.Quit();
+            if (Driver != null)
+            {
+                Driver.Quit();
+            }
         }
+
     }
 }

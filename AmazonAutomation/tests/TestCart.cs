@@ -1,3 +1,4 @@
+using AmazonAutomation.Config;
 using AmazonProject.Infra;
 using AmazonProject.Pages;
 using NUnit.Framework;
@@ -11,15 +12,26 @@ namespace AmazonProject.Tests
     {
         private WebDriverManager _webDriverManager;
         private AmazonHomePage _amazonHomePage;
-       
+        private SearchResultsPage _searchResultsPage;
+        private ConfigProvider _config;
+        private int _randomNumber;
+
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
             _webDriverManager = new WebDriverManager();
-            _webDriverManager.InitializeDriver();
+            await _webDriverManager.InitializeDriverAsync();
 
             _amazonHomePage = new AmazonHomePage(_webDriverManager.Driver);
-          
+            _searchResultsPage = new SearchResultsPage(_webDriverManager.Driver);
+
+                // Load the configuration
+            _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
+
+            Random random = new Random();
+
+            // Generate a random integer between 0 and 100
+            _randomNumber = random.Next(0, 5000);
         }
 
         [TearDown]
@@ -32,10 +44,12 @@ namespace AmazonProject.Tests
         public void AmazonAutomationTest()
         {
             // Arrange
+            Thread.Sleep(_randomNumber); // to avoid automate detection
             _amazonHomePage.GoToHomePage();
-            _amazonHomePage.SearchForItem("laptop");
+            _amazonHomePage.SearchForItem(_config.SearchTerm);
 
-           
+            _searchResultsPage.ApplyFilters();
+
         }
     }
 }

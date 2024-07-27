@@ -1,5 +1,6 @@
 using OpenQA.Selenium;
 using System;
+using AmazonAutomation.Config;
 
 namespace AmazonProject.Infra
 {
@@ -7,6 +8,9 @@ namespace AmazonProject.Infra
     {
         protected IWebDriver _driver;
 
+        private ConfigProvider _config;
+
+        
         public BasePage(IWebDriver driver)
         {
             _driver = driver;
@@ -18,13 +22,22 @@ namespace AmazonProject.Infra
             _driver.Navigate().GoToUrl(url);
         }
 
+        public ConfigProvider GetConfig(){
+            // Load the configuration
+            _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
+            if (_config == null)
+            {
+                throw new Exception("Configuration is null.");
+            }
+            Console.WriteLine($"BaseUrl: {_config.BaseUrl}");
+            return _config;        }
+
         public void TakeScreenshot(string filePath)
-        {
+        {   
             try{
 
-                ITakesScreenshot screenshotDriver = _driver as ITakesScreenshot;
-
-                Screenshot screenshot = screenshotDriver.GetScreenshot();
+                Screenshot ss = ((ITakesScreenshot)_driver).GetScreenshot();
+        //        ss.SaveAsFile(filePath, ScreenshotImageFormat.Png);
 
              //   screenshot.SaveAsFile(filePath, ImageFormat.Png);
             }
