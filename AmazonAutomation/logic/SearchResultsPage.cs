@@ -12,7 +12,6 @@ namespace AmazonProject.Pages
         private string RatingLocator = "//span[text()='4 Stars & Up']";
         public SearchResultsPage(IWebDriver driver) : base(driver) { }
 
-        private IWebElement PriceFilter => _driver.FindElement(By.XPath(SliderLocator));
         private IWebElement MemoryFilter => _driver.FindElement(By.XPath(MemoryLocator));
         private IWebElement RatingFilter => _driver.FindElement(By.XPath(RatingLocator));
 
@@ -23,35 +22,27 @@ namespace AmazonProject.Pages
         private void SetMemory(){
             MemoryFilter.Click();
         }
-        public void SetPriceSlider(int maxPrice)
+        public void SetPriceSlider(string price)
         {
-            IWebElement slider = _driver.FindElement(By.XPath(SliderLocator));
+            IWebElement PriceFilter = _driver.FindElement(By.XPath(SliderLocator));
 
-            // Calculate the offset needed to set the slider to the desired value
-            int width = slider.Size.Width;
-            int offset = CalculateOffsetForPrice(maxPrice, width);
+            Actions actions = new Actions(_driver);
+            string currentValue = PriceFilter.GetAttribute("aria-valuetext");
 
-            // Use Actions class to click and drag the slider
-            Actions move = new Actions(_driver);
-            move.ClickAndHold(slider)
-                .MoveByOffset(offset, 0)
-                .Release()
-                .Perform();
-        }
-
-        private int CalculateOffsetForPrice(int price, int sliderWidth)
-        {
-            
-            int maxPrice = 5200; 
-            int offset = (int)((price / (double)maxPrice) * sliderWidth);
-            return offset - (sliderWidth); // Adjust to move from the right of the slider
+            while (!currentValue.Equals(price))  
+            {
+                actions.ClickAndHold(PriceFilter).MoveByOffset(1, 0).Release().Perform();
+                currentValue = PriceFilter.GetAttribute("aria-valuetext");
+            }
+            Console.WriteLine("for test", currentValue);
         }
 
         public void ApplyFilters()
         {
-            SetPriceSlider(500);
             SetMemory();
             SetRating();
+            SetPriceSlider("$500");
+
         }
 
         public List<string> CollectProductLinks()

@@ -29,8 +29,8 @@ namespace AmazonProject.Infra
             {
                 throw new Exception("Configuration is null.");
             }
-            Console.WriteLine($"BaseUrl: {_config.BaseUrl}");
-            return _config;        }
+            return _config;   
+        }
 
         public void TakeScreenshot(string filePath)
         {   

@@ -41,10 +41,10 @@ namespace AmazonProject.Tests
         }
 
         [Test]
-        public void AmazonAutomationTest()
+        public async Task TestAmazonAutomationTest()
         {
             // Arrange
-            Thread.Sleep(_randomNumber); // to avoid automate detection
+            await Task.Delay(_randomNumber); // to avoid automate detection
             _amazonHomePage.GoToHomePage();
             _amazonHomePage.SearchForItem(_config.SearchTerm);
 

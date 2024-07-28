@@ -26,6 +26,8 @@ namespace AmazonProject.Infra
             ((IJavaScriptExecutor)Driver).ExecuteScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
 
             Driver.Manage().Window.Maximize();
+            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
         }
 
         public void CloseDriver()
