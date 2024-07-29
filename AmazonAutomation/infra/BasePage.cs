@@ -31,7 +31,11 @@ namespace AmazonProject.Infra
             }
             return _config;   
         }
-
+         public void RefreshPage()
+        {
+            _driver.Navigate().Refresh();
+        }
+        
         public void TakeScreenshot(string filePath)
         {   
             try{

@@ -10,8 +10,11 @@ namespace AmazonProject.Tests
     [TestFixture]
     public class AmazonTests
     {
-        private WebDriverManager _webDriverManager;
+        private BrowserWrapper _browserWrapper;
         private AmazonHomePage _amazonHomePage;
+        private Navbar _navbar;
+        private SignInPopUp _signInPopUp;
+        private LoginPage _loginPage;
         private SearchResultsPage _searchResultsPage;
         private ConfigProvider _config;
         private int _randomNumber;
@@ -19,34 +22,44 @@ namespace AmazonProject.Tests
         [SetUp]
         public async Task SetUp()
         {
-            _webDriverManager = new WebDriverManager();
-            await _webDriverManager.InitializeDriverAsync();
+            _browserWrapper = new BrowserWrapper();
+            await _browserWrapper.InitializeDriverAsync();
 
-            _amazonHomePage = new AmazonHomePage(_webDriverManager.Driver);
-            _searchResultsPage = new SearchResultsPage(_webDriverManager.Driver);
+            _amazonHomePage = new AmazonHomePage(_browserWrapper.Driver);
 
                 // Load the configuration
             _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
 
             Random random = new Random();
 
-            // Generate a random integer between 0 and 100
+            // Generate a random integer between 0 and 5000
             _randomNumber = random.Next(0, 5000);
+
+        
+            await Task.Delay(_randomNumber); // to avoid automate detection
+            _amazonHomePage.GoToHomePage();
+
+            _navbar = new Navbar(_browserWrapper.Driver);
+            _navbar.ClickLogin();
+            _loginPage = new LoginPage(_browserWrapper.Driver);
+            _loginPage.LoginFlow(_config.Email, _config.Password);
+            
+
         }
 
         [TearDown]
         public void TearDown()
         {
-            _webDriverManager.CloseDriver();
+            _browserWrapper.CloseDriver();
         }
 
         [Test]
-        public async Task TestAmazonAutomationTest()
+        public void TestAmazonAutomationTest()
         {
-            // Arrange
-            await Task.Delay(_randomNumber); // to avoid automate detection
-            _amazonHomePage.GoToHomePage();
+            _amazonHomePage = new AmazonHomePage(_browserWrapper.Driver);
             _amazonHomePage.SearchForItem(_config.SearchTerm);
+
+            _searchResultsPage = new SearchResultsPage(_browserWrapper.Driver);
 
             _searchResultsPage.ApplyFilters();
 

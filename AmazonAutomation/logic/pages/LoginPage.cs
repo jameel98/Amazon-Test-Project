@@ -17,14 +17,14 @@ namespace AmazonProject.Pages
         private IWebElement EmailInput => _driver.FindElement(By.XPath(EmailLocator)); 
         private IWebElement ContineButton => _driver.FindElement(By.XPath(ContinueLocator)); 
 
-        public void fillEmail(string email){
+        public void FillEmail(string email){
             EmailInput.SendKeys(email);
         }
 
         public void ClickContinue(){
             ContineButton.Click();
         }
-        public void fillPassword(string password){
+        public void FillPassword(string password){
             IWebElement PasswordInput = _driver.FindElement(By.XPath(PasswordLocator));
             PasswordInput.Clear();
             PasswordInput.SendKeys(password);
@@ -32,6 +32,13 @@ namespace AmazonProject.Pages
         public void ClickSignIn(){
             IWebElement SignInButton = _driver.FindElement(By.XPath(SignInLocator));
             SignInButton.Click();
+        }
+
+        public void LoginFlow(string email, string password){
+            FillEmail(email);
+            ClickContinue();
+            FillPassword(password);
+            ClickSignIn();
         }
     }
 }

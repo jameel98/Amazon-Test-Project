@@ -13,6 +13,8 @@ namespace AmazonAutomation.Config
         public int MinRating { get; set; }
         public int MaxReviewCount { get; set; }
         public string ScreenshotPath { get; set; }
+        public string Email {get; set;}
+        public string Password {get; set;}
 
         public static ConfigProvider LoadConfig(string filePath)
         {

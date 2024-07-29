@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AmazonProject.Infra
 {
-    public class WebDriverManager
+    public class BrowserWrapper
     {
 
         public IWebDriver Driver { get; private set; }
