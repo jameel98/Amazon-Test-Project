@@ -17,7 +17,10 @@ namespace AmazonProject.Infra
         //     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
         // }
 
-
+        /// <summary>
+        /// initialize the browser, I used undetected driver to avoid automations detection by the amazon website
+        /// </summary>
+        /// <returns></returns>
        public async Task InitializeDriverAsync()
         {
             var driverPath = await new ChromeDriverInstaller().Auto();

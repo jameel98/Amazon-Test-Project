@@ -16,6 +16,13 @@ namespace AmazonAutomation.Config
         public string Email {get; set;}
         public string Password {get; set;}
 
+        /// <summary>
+        /// read all the text from a file specified by the file path
+        /// Read all opend the file read it and close the file
+        /// the content stored in jsonString variable as string
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static ConfigProvider LoadConfig(string filePath)
         {
             try

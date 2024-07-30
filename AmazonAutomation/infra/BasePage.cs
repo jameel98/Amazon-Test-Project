@@ -16,7 +16,10 @@ namespace AmazonProject.Infra
             _driver = driver;
         }
 
-        // Common methods that can be used by all pages can be added here
+        /// <summary>
+        /// navigation function gets input url and navigate to the url by driver
+        /// </summary>
+        /// <param name="url"></param>
         public void NavigateTo(string url)
         {
             _driver.Navigate().GoToUrl(url);
@@ -24,7 +27,7 @@ namespace AmazonProject.Infra
 
         public ConfigProvider GetConfig(){
             // Load the configuration
-            _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
+            _config = ConfigProvider.LoadConfig(@"/AmazonAutomation/config.json");
             if (_config == null)
             {
                 throw new Exception("Configuration is null.");
