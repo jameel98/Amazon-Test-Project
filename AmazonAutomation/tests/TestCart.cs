@@ -13,9 +13,9 @@ namespace AmazonProject.Tests
         private BrowserWrapper _browserWrapper;
         private AmazonHomePage _amazonHomePage;
         private Navbar _navbar;
-        private SignInPopUp _signInPopUp;
         private LoginPage _loginPage;
         private SearchResultsPage _searchResultsPage;
+        private CartPage _cartPage;
         private ConfigProvider _config;
         private int _randomNumber;
 
@@ -25,44 +25,57 @@ namespace AmazonProject.Tests
             _browserWrapper = new BrowserWrapper();
             await _browserWrapper.InitializeDriverAsync();
 
-            _amazonHomePage = new AmazonHomePage(_browserWrapper.Driver);
-
-                // Load the configuration
+            // Load the configuration
             _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
 
-            Random random = new Random();
+            _amazonHomePage = new AmazonHomePage(_browserWrapper.Driver);
 
+            Random random = new Random();
             // Generate a random integer between 0 and 5000
             _randomNumber = random.Next(0, 5000);
 
         
-            await Task.Delay(_randomNumber); // to avoid automate detection
+            await Task.Delay(_randomNumber + 5000); // to avoid automate detection
             _amazonHomePage.GoToHomePage();
-
             _navbar = new Navbar(_browserWrapper.Driver);
             _navbar.ClickLogin();
             _loginPage = new LoginPage(_browserWrapper.Driver);
             _loginPage.LoginFlow(_config.Email, _config.Password);
-            
 
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _browserWrapper.CloseDriver();
-        }
-
-        [Test]
-        public void TestAmazonAutomationTest()
-        {
             _amazonHomePage = new AmazonHomePage(_browserWrapper.Driver);
             _amazonHomePage.SearchForItem(_config.SearchTerm);
 
             _searchResultsPage = new SearchResultsPage(_browserWrapper.Driver);
 
             _searchResultsPage.ApplyFilters();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _cartPage.ClickNavigateToCheckOut();
+            _cartPage.TakeScreenshot();
+            _browserWrapper.CloseDriver();
+        }
+
+        [Test]
+        public void TestAmazonAutomationTest()
+        {
+           // Arrange and Act
+            _searchResultsPage.CollectAndSaveProductDetails(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\products.txt","bad");
+            // assert
+
+            _navbar = new Navbar(_browserWrapper.Driver);
+            _navbar.GoToCartPage();
+
+            _cartPage = new CartPage(_browserWrapper.Driver);
+            bool areItemsValid = _cartPage.ValidateCartItems(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\products.txt");
+
+            // Assert that all items from the file are present in the cart
+            Assert.IsTrue(areItemsValid, "Not all items from the file are present in the cart.");
+        
 
         }
+        
     }
 }

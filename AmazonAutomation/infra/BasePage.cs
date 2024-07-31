@@ -1,6 +1,8 @@
 using OpenQA.Selenium;
 using System;
 using AmazonAutomation.Config;
+using OpenQA.Selenium.Support.UI;
+using System.Drawing.Imaging; // For ImageFormat
 
 namespace AmazonProject.Infra
 {
@@ -27,7 +29,7 @@ namespace AmazonProject.Infra
 
         public ConfigProvider GetConfig(){
             // Load the configuration
-            _config = ConfigProvider.LoadConfig(@"/AmazonAutomation/config.json");
+            _config = ConfigProvider.LoadConfig(@"C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\config.json");
             if (_config == null)
             {
                 throw new Exception("Configuration is null.");
@@ -38,19 +40,35 @@ namespace AmazonProject.Infra
         {
             _driver.Navigate().Refresh();
         }
-        
-        public void TakeScreenshot(string filePath)
-        {   
-            try{
 
-                Screenshot ss = ((ITakesScreenshot)_driver).GetScreenshot();
-        //        ss.SaveAsFile(filePath, ScreenshotImageFormat.Png);
+        public void TakeScreenshot()
+        {
+            try
+            {
+                // Get the screenshot
+                Screenshot screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
 
-             //   screenshot.SaveAsFile(filePath, ImageFormat.Png);
+                // Construct the directory path
+                string solutionDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
+                string imagesDirectory = Path.Combine(solutionDirectory, "screenshots");
+
+                // Ensure the directory exists
+                if (!Directory.Exists(imagesDirectory))
+                {
+                    Directory.CreateDirectory(imagesDirectory);
+                }
+
+                // Construct the file path
+                string filePath = Path.Combine(imagesDirectory, $"testResult.png");
+
+                // Save the screenshot
+                screenshot.SaveAsFile(string.Format(filePath));
+
+                Console.WriteLine($"Screenshot saved at {filePath}");
             }
-            catch(Exception e){
-                Console.WriteLine(e.Message);
-                throw;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving screenshot: {ex.Message}");
             }
         }
     }

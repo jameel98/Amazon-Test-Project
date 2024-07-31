@@ -13,7 +13,7 @@ namespace AmazonProject.Pages
         }
 
         // lambda used instead of get. when u call the element its execute and brings the elements
-        private IWebElement AccountsButton => _driver.FindElement(By.Id(SignInButton)); 
+        private IWebElement AccountsButton => WebDriverExtensions.FindElement(_driver, By.Id(SignInButton), 10); 
 
         // click login button
         public void ClickLogin(){

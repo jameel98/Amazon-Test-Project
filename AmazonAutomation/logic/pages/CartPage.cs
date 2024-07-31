@@ -17,7 +17,7 @@ namespace AmazonProject.Pages{
         /// of same products we added
         /// </summary>
         /// <returns></returns>
-        private List<string> GetProductsNamesList(){
+        public List<string> GetProductsNamesList(){
             List<string> namesList = new List<string>();
             var elements = _driver.FindElements(By.XPath(ProductsNamesLocator));
             foreach( var e in elements){
@@ -28,10 +28,21 @@ namespace AmazonProject.Pages{
         }
 
         // click on checkout button to navigate to checkout page
-        private void ClickNavigateToCheckOut(){
-            IWebElement checkoutButton = _driver.FindElement(By.XPath(CheckOutbuttonLocator));
+        public void ClickNavigateToCheckOut(){
+            IWebElement checkoutButton = WebDriverExtensions.FindElement(_driver, By.XPath(CheckOutbuttonLocator), 10);
             checkoutButton.Click();
         }
+        /// <summary>
+        /// Validate that all items from the file are present in the cart
+        /// </summary>
+        /// <param name="filePath">File path to read the items from</param>
+        /// <returns>True if all items are present, otherwise false</returns>
+        public bool ValidateCartItems(string filePath)
+        {
+            List<string> fileItemNames = File.ReadAllLines(filePath).ToList();
+            List<string> cartItemNames = GetProductsNamesList();
 
+            return fileItemNames.All(fileItem => cartItemNames.Contains(fileItem));
+        }
     }
 }

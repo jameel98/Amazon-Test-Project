@@ -6,18 +6,23 @@ namespace AmazonProject.Pages
 {
     public class Navbar : BasePage  
     {
-        // component
+        // locators
         private string AccountsLocator = "nav-link-accountList-nav-line-1";
-        public Navbar(IWebDriver driver) : base(driver){
-            
-        }
+        private string CartButtonLocator = "//div[@id='nav-tools']//div[@id='nav-cart-count-container']";
+        public Navbar(IWebDriver driver) : base(driver){}
 
         // lambda used instead of get. when u call the element its execute and brings the elements
-        private IWebElement AccountsButton => _driver.FindElement(By.Id(AccountsLocator)); 
+        private IWebElement AccountsButton => WebDriverExtensions.FindElement(_driver, By.Id(AccountsLocator), 10);
+        private IWebElement CartButton => WebDriverExtensions.FindElement(_driver, By.XPath(CartButtonLocator), 10);
 
         // function click on login button
         public void ClickLogin(){
             AccountsButton.Click();
+        }
+
+        public void GoToCartPage()
+        {
+            CartButton.Click();
         }
     }
 }

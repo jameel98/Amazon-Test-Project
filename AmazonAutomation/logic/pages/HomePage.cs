@@ -6,8 +6,8 @@ namespace AmazonProject.Pages
     public class AmazonHomePage : BasePage  
     {
         // lambda used instead of get. when u call the element its execute and brings the elements
-        private IWebElement SearchBox => _driver.FindElement(By.Id("twotabsearchtextbox"));
-        private IWebElement SearchButton => _driver.FindElement(By.Id("nav-search-submit-button"));
+        private IWebElement SearchBox => WebDriverExtensions.FindElement(_driver ,By.Id("twotabsearchtextbox"), 10);
+        private IWebElement SearchButton => WebDriverExtensions.FindElement(_driver, By.Id("nav-search-submit-button"), 10);
 
         public AmazonHomePage(IWebDriver driver) : base(driver) { }
 
@@ -16,6 +16,13 @@ namespace AmazonProject.Pages
         {
              // Load the configuration
             NavigateTo(GetConfig().BaseUrl);
+            Thread.Sleep(5000);
+            string url = _driver.Url;
+            if(url != GetConfig().BaseUrl)
+            {
+                Thread.Sleep(20000);
+            }
+
         }
 
         // search for item, clear search input then put the item name and search it

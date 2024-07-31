@@ -4,44 +4,101 @@ using OpenQA.Selenium.Interactions;
 using Newtonsoft.Json.Linq;
 using AmazonProject.Entities;
 using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace AmazonProject.Pages
 {
-    public class SearchResultsPage : BasePage  
+    public class SearchResultsPage : BasePage
     {
-
-        //locators
+        // Locators
         private string SliderLocator = "//div[@id='p_36/range-slider_slider-item']/div[2]/input";
         private string FormPriceLocator = "//div[@id='priceRefinements']//div[@id='p_36/range-slider']/form";
-        private string PriceSubmitLocator ="//div[@class='a-section sf-submit-range-button']";
+        private string PriceSubmitLocator = "//div[@class='a-section sf-submit-range-button']";
         private string MemoryLocator = "//span[text()='16 GB']";
         private string RatingLocator = "//i[@class='a-icon a-icon-star-medium a-star-medium-4']";
         private string ProductLocator = "//div[@data-component-type='s-search-result']";
-        private string ProductRatingsLocator = "//div[@data-component-type='s-search-result'][1]/div//a/span[@class='a-size-base s-underline-text']";//dynamic locator add index
-        private string ProductLinkLocator = "//div[@data-component-type='s-search-result'][1]//a[@class='a-link-normal s-no-outline']"; //dynamic locator get href value
-        private string ProductPriceLocator = "//div[@data-component-type='s-search-result'][1]//span[@class='a-price-whole']";
-        
+
         private ProductPage _productPage;
         public SearchResultsPage(IWebDriver driver) : base(driver) { }
 
-        private IWebElement MemoryFilter => _driver.FindElement(By.XPath(MemoryLocator));
-        private IWebElement RatingFilter => _driver.FindElement(By.XPath(RatingLocator));
-        private  IWebElement PriceFilter => _driver.FindElement(By.XPath(SliderLocator));
+        private IWebElement MemoryFilter => WebDriverExtensions.FindElement(_driver, By.XPath(MemoryLocator), 10);
+        private IWebElement RatingFilter => WebDriverExtensions.FindElement(_driver ,By.XPath(RatingLocator),10);
+        private IWebElement PriceFilter => WebDriverExtensions.FindElement(_driver ,By.XPath(SliderLocator), 10);
+        private IWebElement PriceForm => WebDriverExtensions.FindElement(_driver, By.XPath(FormPriceLocator), 10);
 
-        private void SetRating(){
+        // Lambda functions to generate locators dynamically with an index
+        private Func<int, string> ProductRatingsLocator = (index) => $"//div[@data-component-type='s-search-result'][{index}]/div//a/span[@class='a-size-base s-underline-text']";
+        private Func<int, string> ProductLinkLocator = (index) => $"//div[@data-component-type='s-search-result'][{index}]//a[@class='a-link-normal s-no-outline']";
+        private Func<int, string> ProductPriceLocator = (index) => $"//div[@data-component-type='s-search-result'][{index}]//span[@class='a-price-whole']";
+        private Func<int, string> ProductNameLocator = (index) => $"//div[@data-component-type='s-search-result'][{index}]//h2/a/span";
+
+        public IWebElement GetProductNameElement(int index)
+        {
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductNameLocator(index)), 10);
+        }
+
+        public string GetProductName(int index)
+        {
+            return GetProductNameElement(index).Text;
+        }
+
+        public IWebElement GetProductRatingsElement(int index)
+        {
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductRatingsLocator(index)), 10);
+        }
+
+        public IWebElement GetProductLinkElement(int index)
+        {
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductLinkLocator(index)), 10);
+        }
+
+        public IWebElement GetProductPriceElement(int index)
+        {
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductPriceLocator(index)), 10);
+        }
+
+        public string GetProductRatings(int index)
+        {
+            return GetProductRatingsElement(index).Text;
+        }
+
+        public string GetProductLink(int index)
+        {
+            return GetProductLinkElement(index).GetAttribute("href");
+        }
+
+        public string GetProductPrice(int index)
+        {
+            try
+            {
+                return GetProductPriceElement(index).Text;
+            }
+            catch (NoSuchElementException ex)
+            {
+                Console.WriteLine($"Product price element not found for index {index}. Exception: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        private void SetRating()
+        {
             RatingFilter.Click();
         }
-        private void SetMemory(){
+
+        private void SetMemory()
+        {
             MemoryFilter.Click();
         }
+
         /// <summary>
         /// Sets the price filter slider to the specified target price.
         /// </summary>
         /// <param name="targetPrice">The price to set the slider to, as a string in the format "$XXX".</param>
         public void SetPriceSlider(int targetPrice)
         {
-            RefreshPage();
-        
             var steps = GetSliderSteps();
             int sliderWidth = GetSliderWidth(PriceFilter);
             int closestStep = FindClosestStep(steps, targetPrice);
@@ -52,12 +109,12 @@ namespace AmazonProject.Pages
         }
 
         /// <summary>
-        /// calculate the slider steps by getting the slider form data array length
+        /// Calculate the slider steps by getting the slider form data array length
         /// </summary>
         /// <returns></returns>
         private List<int> GetSliderSteps()
         {
-            string dataSliderProps = _driver.FindElement(By.XPath(FormPriceLocator)).GetAttribute("data-slider-props");
+            string dataSliderProps = PriceForm.GetAttribute("data-slider-props");
             JObject sliderProps = JObject.Parse(dataSliderProps);
             JArray stepValues = (JArray)sliderProps["stepValues"];
             return stepValues.Select(v => (int?)v).Where(v => v.HasValue).Select(v => v.Value).ToList();
@@ -67,8 +124,9 @@ namespace AmazonProject.Pages
         {
             return slider.Size.Width;
         }
+
         /// <summary>
-        /// search for closest price to the target price we need 
+        /// Search for closest price to the target price we need 
         /// then gets the steps count
         /// </summary>
         /// <param name="steps"></param>
@@ -80,7 +138,7 @@ namespace AmazonProject.Pages
         }
 
         /// <summary>
-        /// calculate the needed offset of the slider
+        /// Calculate the needed offset of the slider
         /// </summary>
         /// <param name="steps"></param>
         /// <param name="closestStep"></param>
@@ -88,13 +146,14 @@ namespace AmazonProject.Pages
         /// <returns></returns>
         private int CalculateTargetOffset(List<int> steps, int closestStep, int sliderWidth)
         {
-            int currentStep = steps.IndexOf(closestStep);
-            double pixelsPerStep = (double)sliderWidth / (steps.Count - 1);
-            return (int)(currentStep * pixelsPerStep - sliderWidth / 2);
+            int currentStepIndex = steps.IndexOf(closestStep);
+            int maxStepIndex = steps.Count - 1;
+            double pixelsPerStep = (double)sliderWidth / maxStepIndex;
+            return (int)((maxStepIndex - currentStepIndex) * pixelsPerStep);
         }
-        
+
         /// <summary>
-        /// move slider according to the offset value
+        /// Move slider according to the offset value
         /// </summary>
         /// <param name="slider"></param>
         /// <param name="targetOffset"></param>
@@ -108,7 +167,7 @@ namespace AmazonProject.Pages
         }
 
         /// <summary>
-        /// verify the slider is in the correct position of the target price
+        /// Verify the slider is in the correct position of the target price
         /// </summary>
         /// <param name="slider"></param>
         /// <param name="targetPrice"></param>
@@ -120,55 +179,56 @@ namespace AmazonProject.Pages
         }
 
         /// <summary>
-        /// after moving the slider click the submit price button to filter the results
+        /// After moving the slider click the submit price button to filter the results
         /// </summary>
-        public void ClickSubmitPrice(){
-            IWebElement SubmitButton = _driver.FindElement(By.XPath(PriceSubmitLocator));
+        public void ClickSubmitPrice()
+        {
+            IWebElement SubmitButton = WebDriverExtensions.FindElement(_driver, By.XPath(PriceSubmitLocator), 10);
             SubmitButton.Click();
         }
+
         /// <summary>
-        /// apply the memory, rating and price filters
+        /// Apply the memory, rating and price filters
         /// </summary>
         public void ApplyFilters()
         {
             SetMemory();
             SetRating();
-            SetPriceSlider(500);
-
+            // SetPriceSlider(500);
         }
 
-    /// <summary>
-    /// collect the products details (url, name, price) and save them to the file
-    /// </summary>
-    /// <param name="filePath"></param> file path to save the details in it
-    /// <param name="word"></param> the word "bad" to not be in the reviews
-     public void CollectAndSaveProductDetails(string filePath, string word)
+        /// <summary>
+        /// Collect the products details (url, name, price) and save them to the file
+        /// </summary>
+        /// <param name="filePath">File path to save the details in it</param>
+        /// <param name="word">The word "bad" to not be in the reviews</param>
+        public void CollectAndSaveProductDetails(string filePath, string word)
         {
             List<Product> products = CollectProductDetails(word);
             SaveProductDetailsToFile(products, filePath);
         }
 
         /// <summary>
-        /// collect product details add them to list and save them in a file
+        /// Collect product details and add them to a list
         /// </summary>
-        /// <param name="word"></param>
-        /// <returns></returns>
+        /// <param name="word">Word to check in reviews</param>
+        /// <returns>List of products</returns>
         private List<Product> CollectProductDetails(string word)
         {
             List<Product> products = new List<Product>();
 
             var productElements = _driver.FindElements(By.XPath(ProductLocator))
-                .Where(p => HasMoreThanTenReviews(p))
+                .Where((p, index) => HasMoreThanTenReviews(index + 1))
                 .ToList();
 
-            foreach (var productElement in productElements)
+            for (int i = 0; i < productElements.Count; i++)
             {
-                string link = GetProductLink(productElement);
+                string link = GetProductLink(i + 1);
 
-                if (TopReviewsDoNotContainBad(productElement, word))
+                if (TopReviewsDoNotContainBad(link, word))
                 {
-                    string name = GetProductName(productElement);
-                    string price = GetProductPrice(productElement);
+                    string name = GetProductName(i + 1);
+                    string price = GetProductPrice(i + 1);
                     products.Add(new Product(name, price, link));
                 }
 
@@ -182,69 +242,40 @@ namespace AmazonProject.Pages
         }
 
         /// <summary>
-        ///  verify product have more than 10 reviews
+        /// Verify product has more than 10 reviews
         /// </summary>
-        /// <param name="product"></param>
+        /// <param name="index">Product index</param>
         /// <returns></returns>
-        private bool HasMoreThanTenReviews(IWebElement product)
+        private bool HasMoreThanTenReviews(int index)
         {
-            int reviewCount = int.Parse(product.FindElement(By.XPath(ProductRatingsLocator)).Text.Split()[0].Replace(",", ""));
+            int reviewCount = int.Parse(GetProductRatings(index).Split()[0].Replace(",", ""));
             return reviewCount > 10;
-        }
-        /// <summary>
-        /// get product link
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        private string GetProductLink(IWebElement product)
-        {
-            return product.FindElement(By.CssSelector(ProductLinkLocator)).GetAttribute("href");
-        }
-        /// <summary>
-        /// get product name
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        private string GetProductName(IWebElement product)
-        {
-            return product.FindElement(By.CssSelector("h2")).Text;
-        }
-        /// <summary>
-        /// get product price
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        private string GetProductPrice(IWebElement product)
-        {
-            return product.FindElement(By.XPath(ProductPriceLocator)).Text;
         }
 
         /// <summary>
-        /// verify top 10 reviews dont contain the word bad
+        /// Verify top 10 reviews don't contain the word bad
         /// </summary>
-        /// <param name="product"></param>
-        /// <param name="word"></param>
-        /// <returns></returns>
-        private bool TopReviewsDoNotContainBad(IWebElement product, string word)
+        /// <param name="productLink">Product link</param>
+        /// <param name="word">Word to check</param>
+        /// <returns>True if the word is not found in the reviews, otherwise false</returns>
+        private bool TopReviewsDoNotContainBad(string productLink, string word)
         {
-            string productLink = GetProductLink(product);
             _driver.Navigate().GoToUrl(productLink);
 
             _productPage = new ProductPage(_driver);
 
-            if(_productPage.TopUSAReviewsDontContain(word) && _productPage.TopTReviewsDontContain(word)){
-                _productPage.AddItemToCart();
-                return true;
-            }else{
-                return false;
-            }
+            bool result = _productPage.TopReviewsDoNotContain(word);
+
+            _driver.Navigate().Back(); // Navigate back to the search results page
+
+            return result;
         }
 
         /// <summary>
-        /// save product details in a file
+        /// Save product details to a file
         /// </summary>
-        /// <param name="products"></param>
-        /// <param name="filePath"></param>
+        /// <param name="products">List of products</param>
+        /// <param name="filePath">File path to save the details</param>
         private void SaveProductDetailsToFile(List<Product> products, string filePath)
         {
             using (StreamWriter writer = new StreamWriter(filePath))
@@ -255,8 +286,5 @@ namespace AmazonProject.Pages
                 }
             }
         }
-
-       
     }
 }
-

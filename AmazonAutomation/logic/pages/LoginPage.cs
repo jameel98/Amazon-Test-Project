@@ -16,10 +16,10 @@ namespace AmazonProject.Pages
         }
         
         // lambda used instead of get. when u call the element its execute and brings the elements
-        private IWebElement EmailInput => _driver.FindElement(By.XPath(EmailLocator)); 
-        private IWebElement ContineButton => _driver.FindElement(By.XPath(ContinueLocator)); 
-        private IWebElement PasswordInput => _driver.FindElement(By.XPath(PasswordLocator));
-        private IWebElement SignInButton => _driver.FindElement(By.XPath(SignInLocator));
+        private IWebElement EmailInput => WebDriverExtensions.FindElement(_driver, By.XPath(EmailLocator), 10); 
+        private IWebElement ContineButton => WebDriverExtensions.FindElement(_driver ,By.XPath(ContinueLocator), 10); 
+        private IWebElement PasswordInput => WebDriverExtensions.FindElement(_driver, By.XPath(PasswordLocator), 10);
+        private IWebElement SignInButton => WebDriverExtensions.FindElement(_driver, By.XPath(SignInLocator), 10);
 
 
         private void FillEmail(string email){

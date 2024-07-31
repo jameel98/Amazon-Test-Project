@@ -12,7 +12,7 @@ namespace AmazonProject.Pages{
     
         public ProductPage(IWebDriver driver) : base(driver){}
 
-        private IWebElement addButton => _driver.FindElement(By.XPath(AddToCartLocator));
+        private IWebElement addButton => WebDriverExtensions.FindElement(_driver, By.XPath(AddToCartLocator), 10);
         
         /// <summary>
         /// search for the top USA Reviews and validate they dont contain word "bad"
@@ -37,7 +37,10 @@ namespace AmazonProject.Pages{
             .Select(r => r.Text);
             return reviews.All(review => !review.Contains(word, StringComparison.OrdinalIgnoreCase));
         }
-
+        public bool TopReviewsDoNotContain(string word) {
+            
+            return TopUSAReviewsDontContain(word) && TopTReviewsDontContain(word);
+        }
         // add item to the cart
         public void AddItemToCart(){
             

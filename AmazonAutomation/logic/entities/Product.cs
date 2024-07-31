@@ -26,7 +26,7 @@ namespace AmazonProject.Entities
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{Name}, {Price}, {Url}";
+            return $"{Url},{Price},{Name}";
         }
     }
 }

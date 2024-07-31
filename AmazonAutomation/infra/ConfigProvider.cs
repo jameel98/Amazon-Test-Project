@@ -31,9 +31,24 @@ namespace AmazonAutomation.Config
                 ConfigProvider config = JsonSerializer.Deserialize<ConfigProvider>(jsonString);
                 return config;
             }
+             catch (FileNotFoundException ex)
+            {
+                Console.WriteLine("Config file not found: " + ex.Message);
+                throw;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine("Access to config file denied: " + ex.Message);
+                throw;
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine("Error parsing config file: " + ex.Message);
+                throw;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading config file: {ex.Message}");
+                Console.WriteLine("An unexpected error occurred: " + ex.Message);
                 throw;
             }
         }

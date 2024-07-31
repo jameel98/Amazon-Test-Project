@@ -10,13 +10,6 @@ namespace AmazonProject.Infra
     {
 
         public IWebDriver Driver { get; private set; }
-
-        // public void InitializeDriver()
-        // {
-        //     Driver = new ChromeDriver();
-        //     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-        // }
-
         /// <summary>
         /// initialize the browser, I used undetected driver to avoid automations detection by the amazon website
         /// </summary>
@@ -37,6 +30,7 @@ namespace AmazonProject.Infra
         {
             if (Driver != null)
             {
+                Driver.Close();
                 Driver.Quit();
             }
         }

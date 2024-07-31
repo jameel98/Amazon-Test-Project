@@ -158,3 +158,4 @@ C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\bin\Debug\net7.0
 C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\bin\Debug\net7.0\runtimes\win-x86\nativeassets\netcoreapp2.2\aspnetcorev2_inprocess.dll
 C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\bin\Debug\net7.0\runtimes\browser\lib\net7.0\System.Text.Encodings.Web.dll
 C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\bin\Debug\net7.0\UndetectedChromeDriver.dll
+C:\Users\Admin\Downloads\5 Tech\amazon project\AmazonAutomation\bin\Debug\net7.0\ImageProcessor.dll
