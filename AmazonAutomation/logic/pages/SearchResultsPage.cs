@@ -37,7 +37,7 @@ namespace AmazonProject.Pages
 
         public IWebElement GetProductNameElement(int index)
         {
-            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductNameLocator(index)), 10);
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductNameLocator(index)), 20);
         }
 
         public string GetProductName(int index)
@@ -47,12 +47,12 @@ namespace AmazonProject.Pages
 
         public IWebElement GetProductRatingsElement(int index)
         {
-            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductRatingsLocator(index)), 10);
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductRatingsLocator(index)), 20);
         }
 
         public IWebElement GetProductLinkElement(int index)
         {
-            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductLinkLocator(index)), 10);
+            return WebDriverExtensions.FindElement(_driver, By.XPath(ProductLinkLocator(index)), 20);
         }
 
         public IWebElement GetProductPriceElement(int index)
